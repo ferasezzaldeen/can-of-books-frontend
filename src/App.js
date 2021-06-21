@@ -1,7 +1,8 @@
 import React from 'react';
 import Header from './Header';
-import IsLoadingAndError from './IsLoadingAndError';
+// import IsLoadingAndError from './IsLoadingAndError';
 import Footer from './Footer';
+import MyFavoriteBooks from './MyFavoriteBooks';
 import {
   BrowserRouter as Router,
   Switch,
@@ -17,18 +18,18 @@ class App extends React.Component {
     return(
       <>
         <Router>
-          <IsLoadingAndError>
+          {/* <IsLoadingAndError> */}
             <Header />
               <Switch>
                 <Route exact path="/">
                   {/* TODO: if the user is logged in, render the `MyFavoriteBooks` component, if they are not, render the `Login` component */}
-                  {this.props.auth0.isAuthenticated ? <myFavoriteBooks /> : <Login />}
+                  {this.props.auth0.isAuthenticated ? <MyFavoriteBooks /> : <Login />}
                 </Route>
                 {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
                 <Profile />
               </Switch>
             <Footer />
-          </IsLoadingAndError>
+          {/* </IsLoadingAndError> */}
         </Router>
       </>
     )
