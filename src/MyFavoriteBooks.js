@@ -6,9 +6,8 @@ import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
 import BestBooks from './BestBooks';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
 import Forms from './Forms';
+import Update from './Update';
 
 
 
@@ -22,6 +21,11 @@ class MyFavoriteBooks extends React.Component {
       booksData: [],
       showbooks: false,
       show: false,
+      showUpdate: false,
+      index: 0,
+      name: '',
+      description: '',
+      status: ''
     }
 
 
@@ -45,45 +49,66 @@ class MyFavoriteBooks extends React.Component {
   }
 
 
-  addBook= async (event)=>{
+  addBook = async (event) => {
     const { user } = this.props.auth0;
     event.preventDefault();
-    const bookInfo={
-      name:event.target.name.value,
-      description:event.target.description.value,
-      status:event.target.status.value,
-      email:user.email,
+    const bookInfo = {
+      name: event.target.name.value,
+      description: event.target.description.value,
+      status: event.target.status.value,
+      email: user.email,
     };
     console.log('add book function is working')
     let bookURL = process.env.REACT_APP_SERVER;
     let url = `${bookURL}addBooks`
     console.log('url function is working')
-    console.log( `${bookURL}addBooks?${this.props.auth0.user.email}`)
-    let newBook=await axios.post(url,bookInfo);
+    console.log(`${bookURL}addBooks?${this.props.auth0.user.email}`)
+    let newBook = await axios.post(url, bookInfo);
     console.log('axios function is working')
 
     this.setState({
       booksData: newBook.data,
-      showbooks:true,
+      showbooks: true,
     })
 
   }
 
-  deletBOOK= async(idx)=>{
-    const email=this.props.auth0.user.email;
-    const bookInfo={
-      email:email,
-      index:idx,
+  deletBOOK = async (idx) => {
+    const email = this.props.auth0.user.email;
+    const bookInfo = {
+      email: email,
+      index: idx,
     };
     console.log(email);
     console.log(bookInfo);
     let bookURL = process.env.REACT_APP_SERVER;
     let url = `${bookURL}delBooks`
-    let newBook=await axios.delete(url,{params:bookInfo});
+    let newBook = await axios.delete(url, { params: bookInfo });
 
     this.setState({
       booksData: newBook.data,
-      showbooks:true,
+      showbooks: true,
+    })
+
+  }
+
+  updateBook = async (e) => {
+    e.preventDefault();
+    const email = this.props.auth0.user.email;
+    const bookInfo = {
+      email: email,
+      name: this.state.name,
+      description: this.state.description,
+      status: this.state.status,
+    }
+   console.log(bookInfo);
+    let bookURL = process.env.REACT_APP_SERVER;
+    let url = `${bookURL}editBooks/${this.state.index}`
+    let newBook = await axios.put(url, bookInfo);
+    
+    this.setState({
+      booksData: newBook.data,
+      showbooks: true,
     })
 
   }
@@ -100,7 +125,42 @@ class MyFavoriteBooks extends React.Component {
       show: false
     })
   }
+  handleShowUpdate = (idx) => {
+    this.setState({
+      index: idx,
+      name: this.state.booksData[idx].name,
+      description: this.state.booksData[idx].description,
+      status: this.state.booksData[idx].status,
+      showUpdate: true,
 
+
+    })
+  }
+  handleCloseUpdate = () => {
+    this.setState({
+      showUpdate: false
+    })
+  }
+  changeName = (e) => {
+    e.preventDefault();
+    this.setState({
+      name: e.target.value
+    })
+  }
+
+  changeDescription = (e) => {
+    e.preventDefault();
+    this.setState({
+      description: e.target.value
+    })
+  }
+  changeStatus = (e) => {
+    e.preventDefault();
+    this.setState({
+      status:  e.target.value
+    });
+    console.log('this is status',this.state.status)
+  }
   render() {
     return (
       <Jumbotron>
@@ -108,13 +168,24 @@ class MyFavoriteBooks extends React.Component {
         <Button variant="primary" onClick={this.handleShow}>
           Add a book
         </Button>
-        <Forms handleClose={this.handleClose} addBook={this.addBook} show={this.state.show}  />
+        <Forms handleClose={this.handleClose} addBook={this.addBook} show={this.state.show} />
+        <Update
+          showUpdate={this.state.showUpdate}
+          updateBook={this.updateBook}
+          handleCloseUpdate={this.handleCloseUpdate}
+          changeName={this.changeName}
+          changeDescription={this.changeDescription}
+          changeStatus={this.changeStatus}
+          name={this.state.name}
+          description={this.state.description}
+          status={this.state.status}
+        />
         <p>
           This is a collection of my favorite books
         </p>
 
         <p>{this.state.booksData.name}</p>
-        {this.state.showbooks && <BestBooks booksData={this.state.booksData} deletBOOK={this.deletBOOK} showbooks={this.state.showbooks} />}
+        {this.state.showbooks && <BestBooks booksData={this.state.booksData} deletBOOK={this.deletBOOK} handleShowUpdate={this.handleShowUpdate} showbooks={this.state.showbooks} />}
       </Jumbotron>
     )
   }

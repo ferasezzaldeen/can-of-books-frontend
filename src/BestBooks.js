@@ -1,11 +1,10 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { withAuth0 } from '@auth0/auth0-react';
-import MyFavoriteBooks from './MyFavoriteBooks';
 import CardGroup from 'react-bootstrap/CardGroup';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-
+import './BestBooks.css'
 class BestBooks extends React.Component {
 
     render() {
@@ -17,15 +16,19 @@ class BestBooks extends React.Component {
 
                         <Card >
 
-                            <Card.Body style={{ width: '18rem'}}   >
+                            <Card.Body style={{ width: '25rem'}}   >
                                 <Card.Title>  <p>{item.name}</p></Card.Title>
                                 <Card.Text>
                                     <p>description: {item.description}</p>
                                 </Card.Text>
                                 <Card.Text> <p>state: {item.status}</p>  </Card.Text>
-                                <Button variant="primary"  onClick={()=>this.props.deletBOOK(idx)} >
-                                    delet this book
+                                <Button className='updatebutton'  variant="primary"  onClick={()=>this.props.handleShowUpdate(idx)} >
+                                    Update
                                 </Button>
+                                <Button className='deletebutton'  variant="primary"  onClick={()=>this.props.deletBOOK(idx)} >
+                                    delete
+                                </Button>
+                           
                             </Card.Body>
 
                         </Card>
